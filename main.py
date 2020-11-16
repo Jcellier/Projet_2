@@ -2,7 +2,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-
+website_url = "books.toscrape.com"
 base_url = "http://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"  # Url qui va servir de base
 
 
@@ -27,10 +27,14 @@ def get_books_info():
 
     category = soup.find("ul", class_="breadcrumb").find_all("a")[-1].text  # Extraction de la categorie du livre
 
-    review_rating =
+    review_rating = soup.find("p", class_="star-rating")["class"][-1] + " Out of Five"  # Extraction des reviews
 
+    image_raw = soup.find("img", alt=title)["src"]  # Extraction de l'url brut de la jaquette
+    image_url = website_url + image_raw.replace("../..", "")  # Correction du lien brut pour qvoir le bon url
 
-    print(category)
+    product_page_url = base_url
+
+    print(image_url)
 
 
 if __name__ == "__main__":
