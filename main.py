@@ -5,6 +5,7 @@ import pandas as pd
 
 website_url = "books.toscrape.com"
 base_url = "http://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"  # Url qui va servir de base
+category_list = []
 
 
 def get_books_info():
@@ -51,7 +52,46 @@ def get_books_info():
         print(r.status_code)
 
 
+def get_category_url():
+    """
+    Fonction qui fetch et concatenate les urls des categories pour avoir des urls valides.
+    :return:
+    """
+    global category_list
+    base_url = "http://books.toscrape.com/"
+
+    r = requests.get(base_url)
+
+    if r.status_code == 200:
+        soup = BeautifulSoup(r.content, "lxml")
+
+        categories_raw = soup.find("ul", class_="nav nav-list").find_all("a")[1:]
+        for cat in categories_raw:
+            catty = cat["href"].replace("/index.html", "")
+            categories_url = base_url + catty
+            categories_name = categories_url.replace("http://books.toscrape.com/catalogue/category/books/", "")
+            category_dict = {"cat url": categories_url, "cat name": categories_name}
+            category_list.append(category_dict)
+    else:
+        print(r.status_code)
+
+
+def get_books_url():
+    """
+    Fonction qui va chercher les urls de chaque livre par categorie.
+    :return:
+    """
+    trial_url = "http://books.toscrape.com/catalogue/category/books/mystery_3/index.html"
+    global category_list
+    # print(category_list)
+    for cat in category_list:
+        url = cat["cat url"]
+        name = cat["cat name"]
+        r = requests.get(url)
+        print(url)
 
 
 if __name__ == "__main__":
-    get_books_info()
+    # get_books_info()
+    get_category_url()
+    get_books_url()
